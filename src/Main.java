@@ -36,7 +36,7 @@ public class Main {
             Files.walkFileTree(Paths.get(rootDirLocation + File.separator + "template" + File.separator + "source"), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
-                    Path destination = Paths.get(path.toAbsolutePath().toString().replace(File.separator + "template" + File.separator + "source", File.separator + "article"));
+                    Path destination = Paths.get(path.toAbsolutePath().toString().replace(File.separator + "template" + File.separator + "source", File.separator));
                     Files.createDirectories(destination.getParent());
                     Files.copy(path, destination, StandardCopyOption.REPLACE_EXISTING);
                     return super.visitFile(path, basicFileAttributes);
@@ -125,7 +125,7 @@ public class Main {
                     new File(rootDirLocation + File.separator + "article").mkdir();
 
                 FileWriter writer = new FileWriter(rootDirLocation + File.separator + "article" + File.separator + base64Title + ".html");
-                writer.write(generatedIndex.toString());
+                writer.write(generatedSinglePage.toString());
                 writer.close();
                 printInfo("File:'" + base64Title + ".html', Generated.");
 
