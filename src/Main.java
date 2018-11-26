@@ -2,12 +2,11 @@ import org.ini4j.Ini;
 
 import javax.swing.*;
 import java.io.*;
-import java.lang.reflect.Array;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 
 public class Main {
 
@@ -82,6 +81,7 @@ public class Main {
             }
             indexReader.close();
 
+            Collections.sort(rawArticlesPaths);
 
             for (int i = 0; i < rawArticlesPaths.size(); i++) {
                 BufferedReader articleContainerReader = new BufferedReader(new FileReader(rootDirLocation + File.separator + "template" + File.separator + "article container.html"));
@@ -117,8 +117,17 @@ public class Main {
                                     .replaceAll("\\[Article Icon]", icon)
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article Title]", title)
-                                    .replaceAll("\\[Article content]", content))
-                            .append(System.getProperty("line.separator"));
+                                    .replaceAll("\\[Article content]", content)
+                                    .replaceAll("\\[Page footer]", pageFooter)
+                                    .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article Icon"))
+                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article title").getBytes())+".html")
+                                    .replaceAll("\\[Previous Post]", pagePreviousPost)
+                                    .replaceAll("\\[Previous Post Title]", i == 0 ? "没有了" : new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article title"))
+                                    .replaceAll("\\[Next Post Img]", i + 1 == rawArticlesPaths.size() ? "" : new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article Icon"))
+                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article title").getBytes())+".html")
+                                    .replaceAll("\\[Next Post]", pageNextPost)
+                                    .replaceAll("\\[Next Post Title]", i + 1 >= rawArticlesPaths.size() ? "没有了" : new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article title")))
+                            .append(System.getProperty("line.separator"));//[article background path]
                 }
 
                 if (!new File(rootDirLocation + File.separator + "article").exists())
@@ -132,7 +141,7 @@ public class Main {
             }
 
             FileWriter writer = new FileWriter(rootDirLocation + File.separator + "index.html");
-            writer.write(generatedIndex.toString());
+            writer.write(generatedIndex.toString().replaceAll("\\[Article Container]", ""));
             writer.close();
             printInfo("File:'index.html', Generated.");
 
