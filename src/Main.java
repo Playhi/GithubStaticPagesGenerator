@@ -29,7 +29,7 @@ public class Main {
             Ini configIni = new Ini(new File(configDirLocation + File.separator + "config.ini"));
 
 
-            ArrayList<String> rawArticlesPaths = new ArrayList<>();
+            ArrayList<Path> rawArticlesPaths = new ArrayList<>();
 
             printInfo("Copy some files.");
             Files.walkFileTree(Paths.get(rootDirLocation + File.separator + "template" + File.separator + "source"), new SimpleFileVisitor<Path>() {
@@ -48,7 +48,7 @@ public class Main {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes basicFileAttributes) throws IOException {
                     if (path.toString().matches(".*\\.phba")) {
-                        rawArticlesPaths.add(path.toString());
+                        rawArticlesPaths.add(path);
                     }
                     return super.visitFile(path, basicFileAttributes);
                 }
@@ -86,11 +86,11 @@ public class Main {
             for (int i = 0; i < rawArticlesPaths.size(); i++) {
                 BufferedReader articleContainerReader = new BufferedReader(new FileReader(rootDirLocation + File.separator + "template" + File.separator + "article container.html"));
                 BufferedReader articleSinglePageReader = new BufferedReader(new FileReader(rootDirLocation + File.separator + "template" + File.separator + "article.html"));
-                Ini rawArticleIni = new Ini(new File(rawArticlesPaths.get(i)));
+                Ini rawArticleIni = new Ini(new File(rawArticlesPaths.get(i).toString()));
                 String icon = rawArticleIni.get("Article", "Article Icon");
                 String date = rawArticleIni.get("Article", "Article date");
                 String title = rawArticleIni.get("Article", "Article title");
-                String base64Title = Base64.getUrlEncoder().encodeToString(title.getBytes());
+                String generatedFileName = Base64.getUrlEncoder().encodeToString((title + rawArticlesPaths.get(i).getFileName().toString()).getBytes());
                 String content = rawArticleIni.get("Article", "Article content");
                 StringBuilder generatedPagesContainer = new StringBuilder();
                 while ((tempString = articleContainerReader.readLine()) != null) {
@@ -99,7 +99,7 @@ public class Main {
                                     .replaceAll("\\[Article Icon]", icon)
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article title]", title)
-                                    .replaceAll("\\[Article Path]", "article/" + base64Title + ".html")
+                                    .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
                                     .replaceAll("\\[Article summary]", content.length() < 60 ? content : content.substring(0, 59)))
                             .append(System.getProperty("line.separator"));
                 }
@@ -119,24 +119,24 @@ public class Main {
                                     .replaceAll("\\[Article Title]", title)
                                     .replaceAll("\\[Article content]", content)
                                     .replaceAll("\\[Page footer]", pageFooter)
-                                    .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article title").getBytes())+".html")
+                                    .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article Icon"))
+                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title").getBytes()) + ".html")
                                     .replaceAll("\\[Previous Post]", pagePreviousPost)
-                                    .replaceAll("\\[Previous Post Title]", i == 0 ? "没有了" : new Ini(new File(rawArticlesPaths.get(i - 1))).get("Article", "Article title"))
-                                    .replaceAll("\\[Next Post Img]", i + 1 == rawArticlesPaths.size() ? "" : new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article title").getBytes())+".html")
+                                    .replaceAll("\\[Previous Post Title]", i == 0 ? "没有了" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title"))
+                                    .replaceAll("\\[Next Post Img]", i + 1 == rawArticlesPaths.size() ? "" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article Icon"))
+                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title").getBytes()) + ".html")
                                     .replaceAll("\\[Next Post]", pageNextPost)
-                                    .replaceAll("\\[Next Post Title]", i + 1 >= rawArticlesPaths.size() ? "没有了" : new Ini(new File(rawArticlesPaths.get(i + 1))).get("Article", "Article title")))
+                                    .replaceAll("\\[Next Post Title]", i + 1 >= rawArticlesPaths.size() ? "没有了" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title")))
                             .append(System.getProperty("line.separator"));//[article background path]
                 }
 
                 if (!new File(rootDirLocation + File.separator + "article").exists())
                     new File(rootDirLocation + File.separator + "article").mkdir();
 
-                FileWriter writer = new FileWriter(rootDirLocation + File.separator + "article" + File.separator + base64Title + ".html");
+                FileWriter writer = new FileWriter(rootDirLocation + File.separator + "article" + File.separator + generatedFileName + ".html");
                 writer.write(generatedSinglePage.toString());
                 writer.close();
-                printInfo("File:'" + base64Title + ".html', Generated.");
+                printInfo("File:'" + generatedFileName + ".html', Generated.");
 
             }
 
