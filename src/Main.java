@@ -100,7 +100,7 @@ public class Main {
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article title]", title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
-                                    .replaceAll("\\[Article summary]", content.length() < 60 ? content : content.substring(0, 59)))
+                                    .replaceAll("\\[Article summary]", content.length() < 60 ? content.replaceAll("<br>"," ") : content.replaceAll("<br>"," ").substring(0, 59)))
                             .append(System.getProperty("line.separator"));
                 }
                 articleContainerReader.close();
