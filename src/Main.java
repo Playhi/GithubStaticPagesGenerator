@@ -114,6 +114,8 @@ public class Main {
                 while ((tempString = articleSinglePageReader.readLine()) != null) {
                     generatedSinglePage
                             .append(tempString
+                                    .replaceAll("\\[Page keywords]", title)
+                                    .replaceAll("\\[Page description]", title)
                                     .replaceAll("\\[Article Icon]", icon)
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article Title]", title)
