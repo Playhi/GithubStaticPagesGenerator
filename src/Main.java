@@ -93,6 +93,7 @@ public class Main {
                 String generatedFileName = Base64.getUrlEncoder().encodeToString((title + rawArticlesPaths.get(i).getFileName().toString()).getBytes());
                 String content = rawArticleIni.get("Article", "Article content");
                 StringBuilder generatedPagesContainer = new StringBuilder();
+                String singleSummary = content.length() < 60 ? content.replaceAll("<br>", " ") : content.replaceAll("<br>", " ").substring(0, 59);
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
                             .append(tempString
@@ -100,7 +101,7 @@ public class Main {
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article title]", title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
-                                    .replaceAll("\\[Article summary]", content.length() < 60 ? content.replaceAll("<br>"," ") : content.replaceAll("<br>"," ").substring(0, 59)))
+                                    .replaceAll("\\[Article summary]", singleSummary))
                             .append(System.getProperty("line.separator"));
                 }
                 articleContainerReader.close();
@@ -115,18 +116,18 @@ public class Main {
                     generatedSinglePage
                             .append(tempString
                                     .replaceAll("\\[Page keywords]", title)
-                                    .replaceAll("\\[Page description]", title)
+                                    .replaceAll("\\[Page description]", singleSummary)
                                     .replaceAll("\\[Article Icon]", icon)
                                     .replaceAll("\\[Article date]", date)
                                     .replaceAll("\\[Article Title]", title)
                                     .replaceAll("\\[Article content]", content)
                                     .replaceAll("\\[Page footer]", pageFooter)
                                     .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title").getBytes()) + ".html")
+                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString((new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title") + rawArticlesPaths.get(i - 1).getFileName().toString()).getBytes()) + ".html")
                                     .replaceAll("\\[Previous Post]", pagePreviousPost)
                                     .replaceAll("\\[Previous Post Title]", i == 0 ? "没有了" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title"))
                                     .replaceAll("\\[Next Post Img]", i + 1 == rawArticlesPaths.size() ? "" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString(new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title").getBytes()) + ".html")
+                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString((new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title") + rawArticlesPaths.get(i + 1).getFileName().toString()).getBytes()) + ".html")
                                     .replaceAll("\\[Next Post]", pageNextPost)
                                     .replaceAll("\\[Next Post Title]", i + 1 >= rawArticlesPaths.size() ? "没有了" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title")))
                             .append(System.getProperty("line.separator"));//[article background path]
