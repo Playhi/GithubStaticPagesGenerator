@@ -4,13 +4,61 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.Date;
 
 public class Main {
 
     public static void main(String[] args) {
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case "generateonenewrawarticle"://Generate One New Raw Article
+                    generateOneNewEmptyRawArticle();
+                    break;
+                case "gonra"://Generate One New Raw Article
+                    generateOneNewEmptyRawArticle();
+                    break;
+                default:
+                    generatePages();
+                    break;
+            }
+        } else
+            generatePages();
+    }
+
+    private static void printInfo(String info) {
+        System.out.println("[INFO] " + info);
+    }
+
+    private static void generateOneNewEmptyRawArticle() {
+        String rootDirLocation = System.getProperty("user.dir");
+        String rawArticlesDirLocation = rootDirLocation + File.separator + "raw article";
+        if (!new File(rawArticlesDirLocation).exists()) {
+            new File(rawArticlesDirLocation).mkdir();
+        }
+        Date date = new Date();
+        File newRawArticle = new File(rawArticlesDirLocation + File.separator + Long.toString(date.getTime()) + ".phba");
+        try {
+            if (!newRawArticle.exists()) {
+                newRawArticle.createNewFile();
+            }
+            Ini newRawArticleIni = new Ini(newRawArticle);
+            newRawArticleIni.put("Article", "Article Icon", "");
+            newRawArticleIni.put("Article", "Article date", new SimpleDateFormat("yyyyMMdd").format(date));
+            newRawArticleIni.put("Article", "Article title", "Title");
+            newRawArticleIni.put("Article", "Article content", "Content");
+            newRawArticleIni.store();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println(System.getProperty("line.separator") + "[ERROR] " + e.getMessage());
+        }
+        printInfo("Done.");
+    }
+
+    private static void generatePages() {
         String rootDirLocation = System.getProperty("user.dir");
         String rawArticlesDirLocation = rootDirLocation + File.separator + "raw article";
         if (!new File(rawArticlesDirLocation).exists()) {
@@ -155,9 +203,5 @@ public class Main {
         }
         printInfo("Done.");
         JOptionPane.showMessageDialog(null, "Done", "Done", JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private static void printInfo(String info) {
-        System.out.println("[INFO] " + info);
     }
 }
