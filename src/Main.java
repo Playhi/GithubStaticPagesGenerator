@@ -49,6 +49,7 @@ public class Main {
             newRawArticleIni.put("Article", "Article Icon", "");
             newRawArticleIni.put("Article", "Article date", new SimpleDateFormat("yyyyMMdd").format(date));
             newRawArticleIni.put("Article", "Article title", "Title");
+            newRawArticleIni.put("Article", "Page author", "");
             newRawArticleIni.put("Article", "Article content", "Content");
             newRawArticleIni.store();
         } catch (Exception e) {
@@ -106,6 +107,8 @@ public class Main {
 
             String pageTitle = configIni.get("Settings", "Page Title");
             String pageAuthor = configIni.get("Settings", "Page author");
+            String pageDescription = configIni.get("Settings", "Page description");
+            String pageKeywords = configIni.get("Settings", "Page keywords");
             String pageBackgroundPath = configIni.get("Settings", "background path");
             String pageBio = configIni.get("Settings", "this the bio");
             String pageName = configIni.get("Settings", "this is the name");
@@ -119,12 +122,14 @@ public class Main {
                 generatedIndex
                         .append(
                                 tempString
-                                        .replaceAll("\\[Page Title]", pageTitle)
-                                        .replaceAll("\\[Page author]", pageAuthor)
-                                        .replaceAll("\\[background path]", pageBackgroundPath)
-                                        .replaceAll("\\[this the bio]", pageBio)
-                                        .replaceAll("\\[this is the name]", pageName)
-                                        .replaceAll("\\[Page footer]", pageFooter))
+                                        .replaceAll("\\[Page keywords]", pageKeywords == null ? "" : pageKeywords)
+                                        .replaceAll("\\[Page description]", pageDescription == null ? "" : pageDescription)
+                                        .replaceAll("\\[Page Title]", pageTitle == null ? "" : pageTitle)
+                                        .replaceAll("\\[Page author]", pageAuthor == null ? "" : pageAuthor)
+                                        .replaceAll("\\[background path]", pageBackgroundPath == null ? "" : pageBackgroundPath)
+                                        .replaceAll("\\[this the bio]", pageBio == null ? "" : pageBio)
+                                        .replaceAll("\\[this is the name]", pageName == null ? "" : pageName)
+                                        .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter))
                         .append(System.getProperty("line.separator"));
             }
             indexReader.close();
@@ -138,16 +143,19 @@ public class Main {
                 String icon = rawArticleIni.get("Article", "Article Icon");
                 String date = rawArticleIni.get("Article", "Article date");
                 String title = rawArticleIni.get("Article", "Article title");
+                String author = rawArticleIni.get("Article", "Page author");
                 String generatedFileName = Base64.getUrlEncoder().encodeToString((title + rawArticlesPaths.get(i).getFileName().toString()).getBytes());
                 String content = rawArticleIni.get("Article", "Article content");
+                if (content == null)
+                    content = "";
                 StringBuilder generatedPagesContainer = new StringBuilder();
                 String singleSummary = content.length() < 60 ? content.replaceAll("<br>", " ") : content.replaceAll("<br>", " ").substring(0, 59);
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
                             .append(tempString
-                                    .replaceAll("\\[Article Icon]", icon)
-                                    .replaceAll("\\[Article date]", date)
-                                    .replaceAll("\\[Article title]", title)
+                                    .replaceAll("\\[Article Icon]", icon == null ? "" : icon)
+                                    .replaceAll("\\[Article date]", date == null ? "" : date)
+                                    .replaceAll("\\[Article title]", title == null ? "" : title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
                                     .replaceAll("\\[Article summary]", singleSummary))
                             .append(System.getProperty("line.separator"));
@@ -163,13 +171,14 @@ public class Main {
                 while ((tempString = articleSinglePageReader.readLine()) != null) {
                     generatedSinglePage
                             .append(tempString
-                                    .replaceAll("\\[Page keywords]", title)
+                                    .replaceAll("\\[Page author]", author == null ? "" : author)
+                                    .replaceAll("\\[Page keywords]", title == null ? "" : title)
                                     .replaceAll("\\[Page description]", singleSummary)
-                                    .replaceAll("\\[Article Icon]", icon)
-                                    .replaceAll("\\[Article date]", date)
-                                    .replaceAll("\\[Article Title]", title)
+                                    .replaceAll("\\[Article Icon]", icon == null ? "" : icon)
+                                    .replaceAll("\\[Article date]", date == null ? "" : date)
+                                    .replaceAll("\\[Article Title]", title == null ? "" : title)
                                     .replaceAll("\\[Article content]", content)
-                                    .replaceAll("\\[Page footer]", pageFooter)
+                                    .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter)
                                     .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article Icon"))
                                     .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString((new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title") + rawArticlesPaths.get(i - 1).getFileName().toString()).getBytes()) + ".html")
                                     .replaceAll("\\[Previous Post]", pagePreviousPost)
