@@ -149,7 +149,7 @@ public class Main {
                 if (content == null)
                     content = "";
                 StringBuilder generatedPagesContainer = new StringBuilder();
-                String singleSummary = content.length() < 60 ? content.replaceAll("<br>", " ") : content.replaceAll("<br>", " ").substring(0, 59);
+                String singleDescription = content.length() <= 150 ? content : content.substring(0, 150);
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
                             .append(tempString
@@ -157,7 +157,7 @@ public class Main {
                                     .replaceAll("\\[Article date]", date == null ? "" : date)
                                     .replaceAll("\\[Article title]", title == null ? "" : title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
-                                    .replaceAll("\\[Article summary]", singleSummary))
+                                    .replaceAll("\\[Article summary]", content.replaceAll("<br>", " ")))
                             .append(System.getProperty("line.separator"));
                 }
                 articleContainerReader.close();
@@ -173,7 +173,7 @@ public class Main {
                             .append(tempString
                                     .replaceAll("\\[Page author]", author == null ? "" : author)
                                     .replaceAll("\\[Page keywords]", title == null ? "" : title)
-                                    .replaceAll("\\[Page description]", singleSummary)
+                                    .replaceAll("\\[Page description]", singleDescription)
                                     .replaceAll("\\[Article Icon]", icon == null ? "" : icon)
                                     .replaceAll("\\[Article date]", date == null ? "" : date)
                                     .replaceAll("\\[Article Title]", title == null ? "" : title)
