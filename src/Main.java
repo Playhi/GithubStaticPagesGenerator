@@ -157,7 +157,11 @@ public class Main {
                                     .replaceAll("\\[Article date]", date == null ? "" : date)
                                     .replaceAll("\\[Article title]", title == null ? "" : title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
-                                    .replaceAll("\\[Article summary]", content.replaceAll("<br>", " ")))
+                                    .replaceAll("\\[Article summary]",
+                                            content
+                                                    .replaceAll("<br>", " ")
+                                                    .replaceAll("<pre>", "")
+                                                    .replaceAll("</pre>", "")))
                             .append(System.getProperty("line.separator"));
                 }
                 articleContainerReader.close();
