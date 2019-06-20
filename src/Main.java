@@ -149,7 +149,8 @@ public class Main {
                 if (content == null)
                     content = "";
                 StringBuilder generatedPagesContainer = new StringBuilder();
-                String singleDescription = content.length() <= 150 ? content : content.substring(0, 150);
+                String singleDescription = content.trim().replaceAll("<[^>]+>", "");
+                singleDescription = singleDescription.length() <= 150 ? singleDescription : singleDescription.substring(0, 150) + "...";
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
                             .append(tempString
@@ -212,9 +213,9 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println(System.getProperty("line.separator") + "[ERROR] " + e.getMessage());
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+//            JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         printInfo("Done.");
-        JOptionPane.showMessageDialog(null, "Done", "Done", JOptionPane.INFORMATION_MESSAGE);
+//        JOptionPane.showMessageDialog(null, "Done", "Done", JOptionPane.INFORMATION_MESSAGE);
     }
 }
