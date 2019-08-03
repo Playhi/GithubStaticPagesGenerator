@@ -149,7 +149,7 @@ public class Main {
                 if (content == null)
                     content = "";
                 StringBuilder generatedPagesContainer = new StringBuilder();
-                String singleDescription = content.trim().replaceAll("<[^>]+>", "");
+                String singleDescription = content.trim().replaceAll("<[^>]+>", "").replaceAll("&nbsp;","");
                 singleDescription = singleDescription.length() <= 150 ? singleDescription : singleDescription.substring(0, 150) + "...";
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
@@ -158,11 +158,8 @@ public class Main {
                                     .replaceAll("\\[Article date]", date == null ? "" : date)
                                     .replaceAll("\\[Article title]", title == null ? "" : title)
                                     .replaceAll("\\[Article Path]", "article/" + generatedFileName + ".html")
-                                    .replaceAll("\\[Article summary]",
-                                            content
-                                                    .replaceAll("<br>", " ")
-                                                    .replaceAll("<pre>", "")
-                                                    .replaceAll("</pre>", "")))
+                                    .replaceAll("\\[Article summary]", singleDescription)
+                            )
                             .append(System.getProperty("line.separator"));
                 }
                 articleContainerReader.close();
