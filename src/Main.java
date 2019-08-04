@@ -144,12 +144,15 @@ public class Main {
                 String date = rawArticleIni.get("Article", "Article date");
                 String title = rawArticleIni.get("Article", "Article title");
                 String author = rawArticleIni.get("Article", "Page author");
-                String generatedFileName = Base64.getUrlEncoder().encodeToString((title + rawArticlesPaths.get(i).getFileName().toString()).getBytes());
+                String generatedFileName = rawArticlesPaths.get(i).getFileName().toString();
+                if (generatedFileName.contains(".")) {
+                    generatedFileName = generatedFileName.substring(0, generatedFileName.lastIndexOf("."));
+                }
                 String content = rawArticleIni.get("Article", "Article content");
                 if (content == null)
                     content = "";
                 StringBuilder generatedPagesContainer = new StringBuilder();
-                String singleDescription = content.trim().replaceAll("<[^>]+>", "").replaceAll("&nbsp;","");
+                String singleDescription = content.trim().replaceAll("<[^>]+>", "").replaceAll("&nbsp;", "");
                 singleDescription = singleDescription.length() <= 150 ? singleDescription : singleDescription.substring(0, 150) + "...";
                 while ((tempString = articleContainerReader.readLine()) != null) {
                     generatedPagesContainer
@@ -171,6 +174,20 @@ public class Main {
 
                 StringBuilder generatedSinglePage = new StringBuilder();
                 while ((tempString = articleSinglePageReader.readLine()) != null) {
+                    String previousPostUrl = i == 0 ? "#" : rawArticlesPaths.get(i - 1).getFileName().toString();
+                    if (!"#".equals(previousPostUrl)) {
+                        previousPostUrl =
+                                previousPostUrl.contains(".") ?
+                                        previousPostUrl.substring(0, previousPostUrl.lastIndexOf(".")) + ".html" :
+                                        previousPostUrl + ".html";
+                    }
+                    String nextPostUrl = (i + 1 == rawArticlesPaths.size()) ? "#" : rawArticlesPaths.get(i + 1).getFileName().toString();
+                    if (!"#".equals(nextPostUrl)) {
+                        nextPostUrl =
+                                nextPostUrl.contains(".") ?
+                                        nextPostUrl.substring(0, nextPostUrl.lastIndexOf(".")) + ".html" :
+                                        nextPostUrl + ".html";
+                    }
                     generatedSinglePage
                             .append(tempString
                                     .replaceAll("\\[Page author]", author == null ? "" : author)
@@ -182,11 +199,11 @@ public class Main {
                                     .replaceAll("\\[Article content]", content)
                                     .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter)
                                     .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Previous Post Url]", i == 0 ? "#" : Base64.getUrlEncoder().encodeToString((new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title") + rawArticlesPaths.get(i - 1).getFileName().toString()).getBytes()) + ".html")
+                                    .replaceAll("\\[Previous Post Url]", previousPostUrl)
                                     .replaceAll("\\[Previous Post]", pagePreviousPost)
                                     .replaceAll("\\[Previous Post Title]", i == 0 ? "没有了" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article title"))
                                     .replaceAll("\\[Next Post Img]", i + 1 == rawArticlesPaths.size() ? "" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article Icon"))
-                                    .replaceAll("\\[Next Post Url]", i + 1 == rawArticlesPaths.size() ? "#" : Base64.getUrlEncoder().encodeToString((new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title") + rawArticlesPaths.get(i + 1).getFileName().toString()).getBytes()) + ".html")
+                                    .replaceAll("\\[Next Post Url]", nextPostUrl)
                                     .replaceAll("\\[Next Post]", pageNextPost)
                                     .replaceAll("\\[Next Post Title]", i + 1 >= rawArticlesPaths.size() ? "没有了" : new Ini(rawArticlesPaths.get(i + 1).toFile()).get("Article", "Article title")))
                             .append(System.getProperty("line.separator"));//[article background path]
