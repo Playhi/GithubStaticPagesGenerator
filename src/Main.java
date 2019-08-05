@@ -1,12 +1,10 @@
 import org.ini4j.Ini;
 
-import javax.swing.*;
 import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.Date;
 
@@ -115,6 +113,8 @@ public class Main {
             String pageFooter = configIni.get("Settings", "Page footer");
             String pagePreviousPost = configIni.get("Settings", "Previous Post");
             String pageNextPost = configIni.get("Settings", "Next Post");
+            String globalHeader = configIni.get("Settings", "Global Header");
+            String singleHeader = configIni.get("Settings", "Single Header");
             BufferedReader indexReader = new BufferedReader(new FileReader(rootDirLocation + File.separator + "template" + File.separator + "index.html"));
             String tempString;
             StringBuilder generatedIndex = new StringBuilder();
@@ -129,7 +129,9 @@ public class Main {
                                         .replaceAll("\\[background path]", pageBackgroundPath == null ? "" : pageBackgroundPath)
                                         .replaceAll("\\[this the bio]", pageBio == null ? "" : pageBio)
                                         .replaceAll("\\[this is the name]", pageName == null ? "" : pageName)
-                                        .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter))
+                                        .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter)
+                                        .replaceAll("\\[Global Header]", globalHeader == null ? "" : globalHeader)
+                        )
                         .append(System.getProperty("line.separator"));
             }
             indexReader.close();
@@ -144,6 +146,7 @@ public class Main {
                 String date = rawArticleIni.get("Article", "Article date");
                 String title = rawArticleIni.get("Article", "Article title");
                 String author = rawArticleIni.get("Article", "Page author");
+                String articleHeader = rawArticleIni.get("Article", "Article Header");
                 String generatedFileName = rawArticlesPaths.get(i).getFileName().toString();
                 if (generatedFileName.contains(".")) {
                     generatedFileName = generatedFileName.substring(0, generatedFileName.lastIndexOf("."));
@@ -198,6 +201,9 @@ public class Main {
                                     .replaceAll("\\[Article Title]", title == null ? "" : title)
                                     .replaceAll("\\[Article content]", content)
                                     .replaceAll("\\[Page footer]", pageFooter == null ? "" : pageFooter)
+                                    .replaceAll("\\[Global Header]", globalHeader == null ? "" : globalHeader)
+                                    .replaceAll("\\[Single Header]", singleHeader == null ? "" : singleHeader)
+                                    .replaceAll("\\[Article Header]", articleHeader == null ? "" : articleHeader)
                                     .replaceAll("\\[Previous Post Img]", i == 0 ? "" : new Ini(rawArticlesPaths.get(i - 1).toFile()).get("Article", "Article Icon"))
                                     .replaceAll("\\[Previous Post Url]", previousPostUrl)
                                     .replaceAll("\\[Previous Post]", pagePreviousPost)
