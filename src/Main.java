@@ -14,9 +14,7 @@ public class Main {
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
                 case "generateonenewrawarticle"://Generate One New Raw Article
-                    generateOneNewEmptyRawArticle();
-                    break;
-                case "gonra"://Generate One New Raw Article
+                case "gonra":
                     generateOneNewEmptyRawArticle();
                     break;
                 default:
@@ -44,6 +42,7 @@ public class Main {
                 newRawArticle.createNewFile();
             }
             Ini newRawArticleIni = new Ini(newRawArticle);
+            newRawArticleIni.put("Article", "Article Header", "");
             newRawArticleIni.put("Article", "Article Icon", "");
             newRawArticleIni.put("Article", "Article date", new SimpleDateFormat("yyyyMMdd").format(date));
             newRawArticleIni.put("Article", "Article title", "Title");
